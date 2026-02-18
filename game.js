@@ -151,7 +151,7 @@ function hideLoading() {
 // ── Player Logic ──
 
 function createLocalPlayer() {
-    loader.load('personnage joueur non anime.glb', (gltf) => {
+    loader.load('player_model.glb', (gltf) => {
         localPlayer = gltf.scene;
         localPlayer.traverse(c => {
             if (c.isMesh) {
@@ -361,7 +361,7 @@ socket.on('playerDisconnected', (id) => {
 });
 
 function addOtherPlayer(playerData) {
-    loader.load('personnage joueur non anime.glb', (gltf) => {
+    loader.load('player_model.glb', (gltf) => {
         const pModel = gltf.scene;
         pModel.position.copy(playerData.position);
         pModel.rotation.y = playerData.rotation.y;
