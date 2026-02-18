@@ -1,0 +1,330 @@
+/* Game UI Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+    background: #e8dff5;
+    /* Match pastel theme */
+}
+
+#canvas-container {
+    position: fixed;
+    inset: 0;
+}
+
+/* ── Chat Overlay ── */
+#chat-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 320px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+    transition: opacity 0.3s;
+}
+
+#chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.chat-message {
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    word-break: break-all;
+    animation: fadeIn 0.3s ease;
+}
+
+.chat-message .user-name {
+    font-weight: 800;
+    color: #6b3fa0;
+    margin-right: 5px;
+}
+
+#chat-input-container {
+    display: flex;
+    gap: 8px;
+}
+
+#chat-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    outline: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+#chat-input:focus {
+    background: #fff;
+}
+
+/* ── Player List / Info ── */
+#players-online {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(107, 63, 160, 0.85);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Controls Helper ── */
+#controls-hint {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #3a2870;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Loading ── */
+#loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: #e8dff5;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(107, 63, 160, 0.1);
+    border-top: 4px solid #6b3fa0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Interaction Prompt ── */
+.interaction-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 100px);
+    background: rgba(107, 63, 160, 0.9);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Shown via JS */
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translate(-50%, 100px);
+    }
+
+    50% {
+        transform: translate(-50%, 90px);
+    }
+}
+
+/* ── Teleport Modal ── */
+#teleport-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 13, 26, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    /* Shown via JS */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+    color: #6b3fa0;
+    margin-bottom: 20px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.modal-btn.confirm {
+    background: #6b3fa0;
+    color: #fff;
+}
+
+.modal-btn.confirm:hover {
+    background: #5a3488;
+    transform: translateY(-2px);
+}
+
+.modal-btn.cancel {
+    background: #f0f0f5;
+    color: #666;
+}
+
+.modal-btn.cancel:hover {
+    background: #e0e0ea;
+}
+
+/* ── Hub Menu (Teleport) ── */
+#hub-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 13, 26, 0.7);
+    backdrop-filter: blur(15px);
+    z-index: 2000;
+    display: none;
+    /* Toggled via JS */
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.hub-content {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.hub-header {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.hub-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #d4b8e8, #a7d8de);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.hub-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hub-item:hover {
+    background: rgba(107, 63, 160, 0.3);
+    border-color: #d4b8e8;
+    transform: translateY(-5px);
+}
+
+.hub-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.hub-item p {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.hub-footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.close-hint {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 0 5px;
+}

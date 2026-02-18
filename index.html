@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape the Zone — Menu Principal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ───────── Reset ───────── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #e8dff5, #d4eef6, #fce4dc);
+            color: #3a3255;
+        }
+
+        /* ───────── Three.js Canvas ───────── */
+        #canvas-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        #canvas-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ───────── Soft pastel gradient overlay ───────── */
+        #gradient-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(135deg,
+                    rgba(212, 184, 232, 0.25) 0%,
+                    rgba(167, 216, 222, 0.15) 40%,
+                    rgba(252, 228, 220, 0.2) 70%,
+                    transparent 100%);
+        }
+
+        /* ───────── UI Overlay ───────── */
+        #ui-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 8vw;
+            pointer-events: none;
+        }
+
+        /* ───────── Title ───────── */
+        .game-title {
+            font-weight: 800;
+            font-size: clamp(2.4rem, 5vw, 4.5rem);
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+            margin-bottom: 0.15em;
+            background: linear-gradient(135deg, #6b3fa0, #2a7a8a, #c45a3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(107, 63, 160, 0.3));
+            animation: titleFloat 4s ease-in-out infinite;
+        }
+
+        .game-subtitle {
+            font-weight: 300;
+            font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(80, 55, 120, 0.7);
+            margin-bottom: 3rem;
+        }
+
+        @keyframes titleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* ───────── Menu Buttons ───────── */
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            pointer-events: auto;
+        }
+
+        .menu-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.4rem;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* ── Commencer (primary) ── */
+        .menu-btn.primary {
+            background: linear-gradient(135deg, rgba(107, 63, 160, 0.85), rgba(42, 122, 138, 0.85));
+            color: #fff;
+            box-shadow: 0 4px 30px rgba(107, 63, 160, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .menu-btn.primary:hover {
+            transform: translateX(10px) scale(1.04);
+            box-shadow: 0 8px 40px rgba(107, 63, 160, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+            background: linear-gradient(135deg, rgba(120, 75, 180, 0.95), rgba(50, 140, 160, 0.95));
+        }
+
+        /* ── Secondary buttons ── */
+        .menu-btn.secondary {
+            background: rgba(80, 55, 120, 0.12);
+            color: rgba(60, 40, 100, 0.85);
+            box-shadow: inset 0 0 0 1px rgba(80, 55, 120, 0.2);
+        }
+
+        .menu-btn.secondary:hover {
+            transform: translateX(10px) scale(1.04);
+            background: rgba(80, 55, 120, 0.2);
+            color: #3a2870;
+            box-shadow: 0 4px 24px rgba(107, 63, 160, 0.2), inset 0 0 0 1px rgba(80, 55, 120, 0.3);
+        }
+
+        /* ── Hover indicator line ── */
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 3px;
+            height: 60%;
+            border-radius: 2px;
+            background: linear-gradient(180deg, #6b3fa0, #2a7a8a);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .menu-btn:hover::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+
+        /* ── Button icons (SVG inline) ── */
+        .btn-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .menu-btn:hover .btn-icon {
+            opacity: 1;
+        }
+
+        /* ───────── Floating particles (purely CSS) ───────── */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            animation: particleDrift linear infinite;
+        }
+
+        @keyframes particleDrift {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(1.2);
+            }
+        }
+
+        /* ───────── Loading Screen ───────── */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: #0d0d1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            transition: opacity 0.8s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-ring {
+            width: 56px;
+            height: 56px;
+            border: 3px solid rgba(186, 163, 220, 0.2);
+            border-top-color: #d4b8e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(210, 200, 230, 0.6);
+        }
+
+        /* ───────── Version tag ───────── */
+        .version-tag {
+            position: fixed;
+            bottom: 1.2rem;
+            right: 1.5rem;
+            z-index: 2;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(210, 200, 230, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Chargement…</div>
+    </div>
+
+    <!-- Three.js Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- Pastel gradient overlay -->
+    <div id="gradient-overlay"></div>
+
+    <!-- Floating CSS particles -->
+    <div id="particles"></div>
+
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <h1 class="game-title">Escape<br />The Zone</h1>
+        <p class="game-subtitle">Survie · Exploration · Mystère</p>
+
+        <nav class="menu-buttons">
+            <!-- Commencer -->
+            <button class="menu-btn primary" id="btn-start">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Commencer
+            </button>
+
+            <!-- Options -->
+            <button class="menu-btn secondary" id="btn-options">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                Options
+            </button>
+
+            <!-- Quitter -->
+            <button class="menu-btn secondary" id="btn-quit">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Quitter
+            </button>
+        </nav>
+    </div>
+
+    <span class="version-tag">v 0.1 alpha</span>
+
+    <!-- ─── Three.js via CDN ────────────────────────────────── -->
+    <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+    }
+  }
+  </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // ── Particles ──
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const pastelColors = [
+                'rgba(212, 184, 232, 0.5)',
+                'rgba(167, 216, 222, 0.4)',
+                'rgba(247, 201, 182, 0.4)',
+                'rgba(200, 220, 180, 0.3)',
+                'rgba(220, 190, 240, 0.35)',
+            ];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 5 + 2;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.bottom = '-10px';
+                p.style.background = pastelColors[Math.floor(Math.random() * pastelColors.length)];
+                p.style.animationDuration = (Math.random() * 12 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(p);
+            }
+        })();
+
+        // ── Scene Setup ──
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+
+        // Pastel background
+        scene.background = new THREE.Color(0xe8dff5);
+
+        // Camera — will be repositioned dynamically after model loads
+        const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, 50000);
+        camera.position.set(0, 1, 5);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        container.appendChild(renderer.domElement);
+
+        // ── Studio Lighting ──
+
+        // Ambient — soft pastel fill
+        const ambient = new THREE.AmbientLight(0xd4c8e8, 0.6);
+        scene.add(ambient);
+
+        // Key light — warm pastel (top-right)
+        const keyLight = new THREE.DirectionalLight(0xf7d6c4, 1.8);
+        keyLight.position.set(5, 6, 4);
+        keyLight.castShadow = false;
+        scene.add(keyLight);
+
+        // Fill light — cool pastel (left)
+        const fillLight = new THREE.DirectionalLight(0xa7d8de, 0.8);
+        fillLight.position.set(-4, 3, 2);
+        scene.add(fillLight);
+
+        // Rim / back light — purple accent
+        const rimLight = new THREE.DirectionalLight(0xc4a8e0, 0.6);
+        rimLight.position.set(0, 4, -5);
+        scene.add(rimLight);
+
+        // Subtle hemisphere for sky/ground colour difference
+        const hemiLight = new THREE.HemisphereLight(0xd4b8e8, 0x1a1a2e, 0.3);
+        scene.add(hemiLight);
+
+        // ── Load GLB Model ──
+        const loader = new GLTFLoader();
+        let model = null;
+        let charCenter = new THREE.Vector3(3, 1.5, 0);  // fallback
+
+        loader.load(
+            'menu ui avec modele3D.glb',
+            (gltf) => {
+                model = gltf.scene;
+
+                // ── Fix z-fighting: remove outline meshes and fix depth ──
+                const toRemove = [];
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        // Remove outline/backside meshes (they cause black flickering lines)
+                        if (child.material) {
+                            const mat = Array.isArray(child.material) ? child.material : [child.material];
+                            for (const m of mat) {
+                                if (m.side === THREE.BackSide) {
+                                    toRemove.push(child);
+                                    break;
+                                }
+                                // Fix z-fighting on remaining meshes
+                                m.depthWrite = true;
+                                m.polygonOffset = true;
+                                m.polygonOffsetFactor = 1;
+                                m.polygonOffsetUnits = 1;
+                            }
+                        }
+                    }
+                });
+                // Remove outline meshes
+                toRemove.forEach(child => {
+                    if (child.parent) child.parent.remove(child);
+                });
+                console.log('Removed', toRemove.length, 'outline meshes');
+
+                scene.add(model);
+
+                // ── Step 1: Collect all meshes with their bounding boxes ──
+                const meshes = [];
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        const b = new THREE.Box3().setFromObject(child);
+                        const s = b.getSize(new THREE.Vector3());
+                        const vol = s.x * s.y * s.z;
+                        meshes.push({ mesh: child, box: b, size: s, volume: vol, name: child.name });
+                    }
+                });
+
+                // Log all meshes for debugging
+                console.log('All meshes found:', meshes.map(m => ({
+                    name: m.name,
+                    volume: m.volume.toFixed(4),
+                    sizeX: m.size.x.toFixed(3),
+                    sizeY: m.size.y.toFixed(3),
+                    sizeZ: m.size.z.toFixed(3),
+                    center: m.box.getCenter(new THREE.Vector3())
+                })));
+
+                // ── Step 2: Find the full scene bounds ──
+                const fullBox = new THREE.Box3().setFromObject(model);
+                const fullSize = fullBox.getSize(new THREE.Vector3());
+                const fullVolume = fullSize.x * fullSize.y * fullSize.z;
+
+                // ── Step 3: Find character = meshes that are small relative to the full scene ──
+                // Filter out huge meshes (platform, sky dome, etc.) — keep only those < 5% of total volume
+                const smallMeshes = meshes.filter(m => m.volume < fullVolume * 0.05 && m.volume > 0);
+
+                let characterBox;
+                if (smallMeshes.length > 0) {
+                    // Merge bounding boxes of all small meshes to get the character's bounds
+                    characterBox = new THREE.Box3();
+                    smallMeshes.forEach(m => characterBox.union(m.box));
+                    console.log('Character detected from', smallMeshes.length, 'small meshes');
+                } else {
+                    // Fallback: use full model
+                    characterBox = fullBox.clone();
+                    console.log('No small meshes found, using full model');
+                }
+
+                charCenter = characterBox.getCenter(new THREE.Vector3());
+                const charSize = characterBox.getSize(new THREE.Vector3());
+                console.log('Character center:', charCenter);
+                console.log('Character size:', charSize);
+
+                // ── Step 4: Position camera to frame the character on the right half ──
+                const maxCharDim = Math.max(charSize.x, charSize.y, charSize.z);
+                const fov = camera.fov * (Math.PI / 180);
+                const cameraDistance = (maxCharDim / 2) / Math.tan(fov / 2) * 1.1;
+
+                // Offset camera to the left so character appears on the right half
+                camera.position.set(
+                    charCenter.x - cameraDistance * 0.35,
+                    charCenter.y + maxCharDim * 0.25,
+                    charCenter.z + cameraDistance
+                );
+                camera.lookAt(charCenter);
+
+                // Update base camera for parallax
+                baseCamera.x = camera.position.x;
+                baseCamera.y = camera.position.y;
+                baseCamera.z = camera.position.z;
+
+                console.log('Camera positioned at:', camera.position);
+                console.log('Looking at:', charCenter);
+
+                // Hide loading screen
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => loadingScreen.remove(), 900);
+            },
+            (progress) => {
+                // Could update a loading bar here
+            },
+            (error) => {
+                console.error('Error loading model:', error);
+                const loadingScreen = document.getElementById('loading-screen');
+                document.querySelector('.loader-text').textContent = 'Erreur de chargement';
+            }
+        );
+
+        // ── Mouse tracking for parallax ──
+        const mouse = { x: 0, y: 0 };
+        const targetRotation = { x: 0, y: 0 };
+        const baseCamera = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+
+        document.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;   // -1 … 1
+            mouse.y = (e.clientY / window.innerHeight) * 2 - 1;   // -1 … 1
+        });
+
+        // ── Resize handler ──
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener('resize', onResize);
+
+        // ── Animation Loop ──
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const dt = clock.getDelta();
+            const elapsed = clock.getElapsedTime();
+
+            // No rotation — model stays static
+
+            // Parallax camera: smoothly follow mouse
+            const parallaxStrength = 0.4;
+            const targetX = baseCamera.x + mouse.x * parallaxStrength;
+            const targetY = baseCamera.y - mouse.y * parallaxStrength * 0.3;
+
+            camera.position.x += (targetX - camera.position.x) * 2 * dt;
+            camera.position.y += (targetY - camera.position.y) * 2 * dt;
+            camera.lookAt(charCenter);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // ── Button interactions ──
+        document.getElementById('btn-start').addEventListener('click', () => {
+            window.location.href = 'game.html';
+        });
+        document.getElementById('btn-options').addEventListener('click', () => {
+            alert('⚙️ Options — à venir');
+        });
+        document.getElementById('btn-quit').addEventListener('click', () => {
+            if (confirm('Voulez-vous vraiment quitter ?')) {
+                window.close();
+            }
+        });
+    </script>
+</body>
+
+</html>

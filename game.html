@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape the Zone - Social Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game.css">
+</head>
+
+<body>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Génération du hub social...</p>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="players-online">Joueurs : 1</div>
+
+    <div id="controls-hint">
+        WASD pour se déplacer<br>
+        M pour le Menu Hub<br>
+        ENTRÉE pour parler
+    </div>
+
+
+
+    <div id="hub-menu">
+        <div class="hub-content">
+            <div class="hub-header">
+                <h2>HUB DE NAVIGATION</h2>
+            </div>
+            <div class="hub-grid" id="hub-grid">
+                <!-- Injected via JS -->
+            </div>
+            <div class="hub-footer">
+                Appuyez sur <span class="close-hint">M</span> ou <span class="close-hint">ECHAP</span> pour fermer
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <form id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Dire quelque chose..." autocomplete="off">
+        </form>
+    </div>
+
+    <!-- Libraries -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/",
+            "three/examples/jsm/math/Octree": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/math/Octree.js",
+            "three/examples/jsm/math/Capsule": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/math/Capsule.js",
+            "three/examples/jsm/postprocessing/EffectComposer": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/EffectComposer.js",
+            "three/examples/jsm/postprocessing/RenderPass": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/RenderPass.js",
+            "three/examples/jsm/postprocessing/UnrealBloomPass": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/UnrealBloomPass.js",
+            "three/examples/jsm/renderers/CSS2DRenderer": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/renderers/CSS2DRenderer.js"
+        }
+    }
+    </script>
+    <script type="module" src="game.js"></script>
+</body>
+
+</html>
